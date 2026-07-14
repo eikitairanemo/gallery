@@ -1,27 +1,57 @@
+/* ------------------------
+   Reset
+------------------------ */
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
 
-    background:#fff;
-    padding:20px;
+    background:#ffffff;
+
+    font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Helvetica Neue",
+    sans-serif;
+
+}
+
+/* ------------------------
+   Layout
+------------------------ */
+
+.container{
+
+    width:100%;
+    max-width:1600px;
+    margin:auto;
+    padding:24px;
 
 }
 
 .gallery{
 
     column-count:4;
-    column-gap:18px;
+    column-gap:20px;
 
 }
+
+/* ------------------------
+   Item
+------------------------ */
 
 .item{
 
     break-inside:avoid;
-    margin-bottom:18px;
+    margin-bottom:20px;
 
 }
 
@@ -29,8 +59,14 @@ body{
 
     width:100%;
     display:block;
-    transition:.35s ease;
-    border-radius:2px;
+
+    border-radius:8px;
+
+    transition:
+    transform .35s ease,
+    opacity .35s ease;
+
+    cursor:pointer;
 
 }
 
@@ -38,7 +74,13 @@ body{
 
     transform:scale(1.03);
 
+    opacity:.92;
+
 }
+
+/* ------------------------
+   Responsive
+------------------------ */
 
 @media (max-width:1200px){
 
@@ -52,15 +94,34 @@ column-count:3;
 
 @media (max-width:768px){
 
+.container{
+
+padding:16px;
+
+}
+
 .gallery{
 
 column-count:2;
+column-gap:16px;
+
+}
+
+.item{
+
+margin-bottom:16px;
 
 }
 
 }
 
-@media (max-width:500px){
+@media (max-width:480px){
+
+.container{
+
+padding:12px;
+
+}
 
 .gallery{
 
