@@ -24,38 +24,58 @@ body {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 24px;
+  padding: 40px 4vw;
   background: transparent;
 }
 
-/* Pinterest風レイアウト */
 .gallery {
   width: 100%;
-  column-count: 4;
-  column-gap: 24px;
+}
+
+/* 1行ごとのレイアウト */
+.gallery-row {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(22px, 3vw, 55px);
+  margin-left: var(--row-shift, 0%);
+  margin-bottom: clamp(70px, 10vw, 160px);
+}
+
+/* 3枚並び */
+.gallery-row-3 .item {
+  width: calc(33.333% - 36px);
+}
+
+/* 2枚並び */
+.gallery-row-2 {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.gallery-row-2 .item {
+  width: calc(50% - 30px);
 }
 
 .item {
-  width: 100%;
-  display: inline-block;
-  break-inside: avoid;
+  flex-shrink: 0;
   margin-top: var(--offset, 0px);
-  margin-bottom: 24px;
-  overflow: hidden;
+  transform-origin: center;
 }
 
-/* 角丸なし */
+/* 横幅を少しランダム化 */
 .item img {
-  width: 100%;
+  width: calc(100% * var(--width-scale, 1));
   height: auto;
   display: block;
+  margin: 0 auto;
   border-radius: 0;
   transition:
     transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
     opacity 0.4s ease;
 }
 
-/* ホバー */
 .item:hover img {
   transform: scale(1.025);
 }
@@ -63,14 +83,14 @@ body {
 /* スクロール前 */
 .reveal {
   opacity: 0;
-  transform: translateY(45px);
+  transform: translateY(60px);
   transition:
-    opacity 1s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 1.1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: var(--delay, 0ms);
 }
 
-/* スクロールで表示 */
+/* スクロール後 */
 .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
@@ -84,30 +104,54 @@ body {
 }
 
 /* タブレット */
-@media (max-width: 1200px) {
-  .gallery {
-    column-count: 3;
-    column-gap: 18px;
-  }
-
-  .item {
-    margin-bottom: 18px;
-  }
-}
-
-/* スマートフォン */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .container {
-    padding: 12px;
+    padding: 24px 18px;
   }
 
-  .gallery {
-    column-count: 2;
-    column-gap: 12px;
+  .gallery-row {
+    gap: 18px;
+    margin-left: 0;
+    margin-bottom: 70px;
+  }
+
+  .gallery-row-3 .item,
+  .gallery-row-2 .item {
+    width: calc(50% - 9px);
+  }
+
+  .gallery-row-2 {
+    padding: 0;
+  }
+
+  .gallery-row-3 {
+    flex-wrap: wrap;
   }
 
   .item {
     margin-top: calc(var(--offset, 0px) * 0.45);
-    margin-bottom: 12px;
+  }
+}
+
+/* スマートフォン */
+@media (max-width: 520px) {
+  .container {
+    padding: 14px 10px;
+  }
+
+  .gallery-row {
+    display: block;
+    margin-bottom: 0;
+  }
+
+  .gallery-row-3 .item,
+  .gallery-row-2 .item {
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 38px;
+  }
+
+  .item img {
+    width: 100%;
   }
 }

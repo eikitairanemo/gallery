@@ -1,9 +1,5 @@
 const gallery = document.getElementById("gallery");
 
-/**
- * ファイル名から固定の数値を作る
- * 再読み込みしても配置が大きく変わらないようにする
- */
 function createHash(text) {
   let hash = 0;
 
@@ -15,27 +11,21 @@ function createHash(text) {
   return Math.abs(hash);
 }
 
-/**
- * 配列をランダムに並び替える
- */
 function shuffleArray(array) {
-  const copiedArray = [...array];
+  const result = [...array];
 
-  for (let i = copiedArray.length - 1; i > 0; i--) {
+  for (let i = result.length - 1; i > 0; i--) {
     const randomIndex = Math.floor(Math.random() * (i + 1));
 
-    [copiedArray[i], copiedArray[randomIndex]] = [
-      copiedArray[randomIndex],
-      copiedArray[i]
+    [result[i], result[randomIndex]] = [
+      result[randomIndex],
+      result[i]
     ];
   }
 
-  return copiedArray;
+  return result;
 }
 
-/**
- * スクロール表示アニメーション
- */
 const observer = new IntersectionObserver(
   entries => {
     entries.forEach(entry => {
@@ -46,8 +36,8 @@ const observer = new IntersectionObserver(
     });
   },
   {
-    threshold: 0.12,
-    rootMargin: "0px 0px -60px 0px"
+    threshold: 0.08,
+    rootMargin: "0px 0px -40px 0px"
   }
 );
 
@@ -66,37 +56,77 @@ fetch("./images.json?v=" + Date.now())
 
     const shuffledImages = shuffleArray(images);
 
-    shuffledImages.forEach((image, index) => {
-      const hash = createHash(image.name);
+    let currentIndex = 0;
+    let rowIndex = 0;
 
-      const item = document.createElement("div");
-      item.className = "item reveal";
+    while (currentIndex < shuffledImages.length) {
+      /*
+       * PCではランダムに2枚または3枚
+       * 3枚になる確率を少し高くしています
+       */
+      const remaining = shuffledImages.length - currentIndex;
+      let itemCount = Math.random() < 0.58 ? 3 : 2;
+
+      if (remaining < itemCount) {
+        itemCount = remaining;
+      }
+
+      const row = document.createElement("div");
+      row.className = `gallery-row gallery-row-${itemCount}`;
 
       /*
-       * 画像ごとに縦方向の余白を変える
-       * 0px / 25px / 50px / 75px
+       * 行全体を少し左右にずらす
        */
-      const offset = (hash % 4) * 25;
-      item.style.setProperty("--offset", `${offset}px`);
+      const rowShiftPattern = [-3, 0, 3, 1, -1];
+      const rowShift = rowShiftPattern[rowIndex % rowShiftPattern.length];
 
-      /*
-       * 表示アニメーションを少しずつずらす
-       */
-      const delay = (index % 6) * 70;
-      item.style.setProperty("--delay", `${delay}ms`);
+      row.style.setProperty("--row-shift", `${rowShift}%`);
 
-      const img = document.createElement("img");
+      for (let i = 0; i < itemCount; i++) {
+        const image = shuffledImages[currentIndex];
+        const hash = createHash(image.name);
 
-      img.src = image.path;
-      img.alt = image.name;
-      img.loading = "lazy";
-      img.decoding = "async";
+        const item = document.createElement("div");
+        item.className = "item reveal";
 
-      item.appendChild(img);
-      gallery.appendChild(item);
+        /*
+         * 画像ごとの上下位置をランダム風に変更
+         */
+        const offsetPatterns = [0, 25, 50, 80, 110];
+        const offset = offsetPatterns[hash % offsetPatterns.length];
 
-      observer.observe(item);
-    });
+        item.style.setProperty("--offset", `${offset}px`);
+        item.style.setProperty(
+          "--delay",
+          `${((currentIndex + i) % 5) * 90}ms`
+        );
+
+        /*
+         * 横幅も少しだけ変える
+         */
+        const widthScalePatterns = [0.92, 0.97, 1, 1.04];
+        const widthScale =
+          widthScalePatterns[(hash + rowIndex) % widthScalePatterns.length];
+
+        item.style.setProperty("--width-scale", widthScale);
+
+        const img = document.createElement("img");
+        img.src = image.path;
+        img.alt = image.name;
+        img.loading = "lazy";
+        img.decoding = "async";
+
+        item.appendChild(img);
+        row.appendChild(item);
+
+        observer.observe(item);
+
+        currentIndex++;
+      }
+
+      gallery.appendChild(row);
+      rowIndex++;
+    }
   })
   .catch(error => {
     gallery.innerHTML = `
