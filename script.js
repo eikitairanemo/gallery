@@ -77,7 +77,7 @@ fetch("./images.json?v=" + Date.now())
       /*
        * 行全体を少し左右にずらす
        */
-      const rowShiftPattern = [-3, 0, 3, 1, -1];
+      const rowShiftPattern = [-4, 1, 4, -2, 2];
       const rowShift = rowShiftPattern[rowIndex % rowShiftPattern.length];
 
       row.style.setProperty("--row-shift", `${rowShift}%`);
@@ -92,7 +92,7 @@ fetch("./images.json?v=" + Date.now())
         /*
          * 画像ごとの上下位置をランダム風に変更
          */
-        const offsetPatterns = [0, 25, 50, 80, 110];
+        const offsetPatterns = [0, 60, 120, 180, 240];
         const offset = offsetPatterns[hash % offsetPatterns.length];
 
         item.style.setProperty("--offset", `${offset}px`);
