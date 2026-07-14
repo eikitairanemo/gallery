@@ -1,5 +1,8 @@
 const gallery = document.getElementById("gallery");
 
+/**
+ * ファイル名から固定の数値を作る
+ */
 function createHash(text) {
   let hash = 0;
 
@@ -11,6 +14,9 @@ function createHash(text) {
   return Math.abs(hash);
 }
 
+/**
+ * 画像順をランダム化
+ */
 function shuffleArray(array) {
   const result = [...array];
 
@@ -26,6 +32,33 @@ function shuffleArray(array) {
   return result;
 }
 
+/**
+ * 2枚・3枚・4枚をランダムに選ぶ
+ */
+function getRandomItemCount(remaining) {
+  const random = Math.random();
+
+  let count;
+
+  /*
+   * 4枚：約45%
+   * 3枚：約30%
+   * 2枚：約25%
+   */
+  if (random < 0.45) {
+    count = 4;
+  } else if (random < 0.75) {
+    count = 3;
+  } else {
+    count = 2;
+  }
+
+  return Math.min(count, remaining);
+}
+
+/**
+ * スクロール表示
+ */
 const observer = new IntersectionObserver(
   entries => {
     entries.forEach(entry => {
@@ -41,6 +74,9 @@ const observer = new IntersectionObserver(
   }
 );
 
+/**
+ * images.jsonを読み込む
+ */
 fetch(`./images.json?v=${Date.now()}`)
   .then(response => {
     if (!response.ok) {
@@ -60,15 +96,19 @@ fetch(`./images.json?v=${Date.now()}`)
     let rowIndex = 0;
 
     while (currentIndex < shuffledImages.length) {
+      const remaining = shuffledImages.length - currentIndex;
+      const itemCount = getRandomItemCount(remaining);
+
       const row = document.createElement("div");
 
       row.className = [
         "gallery-row",
+        `gallery-row-${itemCount}`,
         `row-pattern-${rowIndex % 6}`
       ].join(" ");
 
-      /*
-       * 行全体を左右へ少し移動
+      /**
+       * 行全体を少し左右に移動
        */
       const rowShiftPatterns = [-3, 2, 0, 4, -2, 1];
 
@@ -77,17 +117,9 @@ fetch(`./images.json?v=${Date.now()}`)
         `${rowShiftPatterns[rowIndex % rowShiftPatterns.length]}%`
       );
 
-      /*
-       * PCでは基本4枚ずつ
-       */
-      const itemCount = Math.min(
-        4,
-        shuffledImages.length - currentIndex
-      );
-
       for (let position = 0; position < itemCount; position++) {
         const image = shuffledImages[currentIndex];
-        const hash = createHash(image.name);
+        const hash = createHash(image.name || image.path);
 
         const item = document.createElement("div");
 
@@ -97,29 +129,29 @@ fetch(`./images.json?v=${Date.now()}`)
           `item-position-${position + 1}`
         ].join(" ");
 
-        /*
-         * 上下位置をばらけさせる
+        /**
+         * 上下位置をランダム風にばらけさせる
          */
         const offsetPatterns = [
           0,
-          80,
-          150,
-          230,
+          70,
+          130,
+          190,
+          250,
           310,
-          120,
-          270
+          110,
+          220
         ];
 
         const offset =
           offsetPatterns[
-            (hash + position + rowIndex) %
-              offsetPatterns.length
+            (hash + position + rowIndex) % offsetPatterns.length
           ];
 
         item.style.setProperty("--offset", `${offset}px`);
 
-        /*
-         * 横幅を画像ごとに変える
+        /**
+         * 画像サイズを少しずつ変える
          */
         const widthPatterns = [
           0.76,
@@ -127,29 +159,28 @@ fetch(`./images.json?v=${Date.now()}`)
           0.88,
           0.94,
           1,
-          0.86
+          0.85
         ];
 
         const widthScale =
           widthPatterns[
-            (hash + rowIndex + position) %
-              widthPatterns.length
+            (hash + rowIndex + position) % widthPatterns.length
           ];
 
         item.style.setProperty("--width-scale", widthScale);
 
-        /*
-         * 左右・上下の重なり
-         * 空のパターンを少なくして重なりを増やす
+        /**
+         * 画像同士の重なり
          */
         const overlapPatterns = [
-          { x: -22, y: 0, z: 5 },
-          { x: 20, y: -70, z: 4 },
-          { x: -16, y: 80, z: 3 },
-          { x: 18, y: -130, z: 6 },
-          { x: -25, y: -40, z: 7 },
-          { x: 12, y: 100, z: 2 },
-          { x: 0, y: -90, z: 5 }
+          { x: -24, y: 0, z: 6 },
+          { x: 20, y: -75, z: 4 },
+          { x: -18, y: 90, z: 3 },
+          { x: 22, y: -135, z: 7 },
+          { x: -27, y: -45, z: 8 },
+          { x: 15, y: 105, z: 2 },
+          { x: -10, y: -95, z: 5 },
+          { x: 8, y: 40, z: 4 }
         ];
 
         const overlap =
@@ -173,12 +204,12 @@ fetch(`./images.json?v=${Date.now()}`)
           overlap.z
         );
 
-        /*
+        /**
          * フェード表示の時間差
          */
         item.style.setProperty(
           "--delay",
-          `${((currentIndex + position) % 5) * 80}ms`
+          `${((currentIndex + position) % 6) * 80}ms`
         );
 
         const img = document.createElement("img");

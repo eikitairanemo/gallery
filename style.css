@@ -1,3 +1,7 @@
+/* -----------------------------
+   Reset
+----------------------------- */
+
 * {
   margin: 0;
   padding: 0;
@@ -22,9 +26,15 @@ body {
     sans-serif;
 }
 
+
+/* -----------------------------
+   Base
+----------------------------- */
+
 .container {
   width: 100%;
   max-width: none;
+
   margin: 0;
 
   padding:
@@ -38,7 +48,11 @@ body {
   width: 100%;
 }
 
-/* 1行4枚 */
+
+/* -----------------------------
+   Gallery row
+----------------------------- */
+
 .gallery-row {
   position: relative;
 
@@ -48,34 +62,79 @@ body {
 
   width: 100%;
 
-  /*
-   * あえて隙間を狭くして重なりやすくする
-   */
-  gap: clamp(0px, 0.8vw, 14px);
+  gap: clamp(0px, 0.8vw, 16px);
 
   margin-bottom:
-    clamp(210px, 25vw, 480px);
+    clamp(220px, 26vw, 500px);
 
   translate: var(--row-shift, 0%) 0;
 
   overflow: visible;
 }
 
-/* 画像の基本サイズ */
+
+/* -----------------------------
+   4枚行：小さめ
+----------------------------- */
+
+.gallery-row-4 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.gallery-row-4 .item {
+  flex: 0 0 25%;
+  width: 25%;
+}
+
+
+/* -----------------------------
+   3枚行：中くらい
+----------------------------- */
+
+.gallery-row-3 {
+  padding-left: clamp(10px, 3vw, 60px);
+  padding-right: clamp(10px, 3vw, 60px);
+
+  gap: clamp(8px, 1.5vw, 30px);
+}
+
+.gallery-row-3 .item {
+  flex: 0 0 33.333%;
+  width: 33.333%;
+}
+
+
+/* -----------------------------
+   2枚行：大きめ
+----------------------------- */
+
+.gallery-row-2 {
+  padding-left: clamp(40px, 8vw, 170px);
+  padding-right: clamp(40px, 8vw, 170px);
+
+  gap: clamp(20px, 3vw, 60px);
+}
+
+.gallery-row-2 .item {
+  flex: 0 0 50%;
+  width: 50%;
+}
+
+
+/* -----------------------------
+   Item
+----------------------------- */
+
 .item {
   position: relative;
 
-  flex: 0 0 25%;
-
-  width: 25%;
+  flex-shrink: 0;
 
   margin-top: var(--offset, 0px);
 
   z-index: var(--item-z, 1);
 
-  /*
-   * 画像同士を重ねる
-   */
   transform:
     translate(
       var(--overlap-x, 0%),
@@ -85,9 +144,10 @@ body {
   overflow: visible;
 }
 
+
 /*
- * 画像本来の高さを維持
- * 高さを統一しない
+ * 高さを固定しない
+ * 元画像の比率を維持
  */
 .item img {
   display: block;
@@ -101,22 +161,26 @@ body {
 
   border-radius: 0;
 
-  object-fit: initial;
-
   transition:
     scale 0.8s cubic-bezier(0.22, 1, 0.36, 1),
     opacity 0.5s ease;
+
+  will-change: scale;
 }
 
 .item:hover {
-  z-index: 20;
+  z-index: 30;
 }
 
 .item:hover img {
   scale: 1.035;
 }
 
-/* スクロール前 */
+
+/* -----------------------------
+   Scroll animation
+----------------------------- */
+
 .reveal {
   opacity: 0;
 
@@ -127,15 +191,20 @@ body {
     translate 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 
   transition-delay: var(--delay, 0ms);
+
+  will-change: opacity, translate;
 }
 
-/* スクロール後 */
 .reveal.is-visible {
   opacity: 1;
   translate: 0 0;
 }
 
-/* 行ごとに配置をさらに崩す */
+
+/* -----------------------------
+   Row patterns
+----------------------------- */
+
 .row-pattern-0 .item-position-1 {
   margin-top: 20px;
 }
@@ -149,8 +218,9 @@ body {
 }
 
 .row-pattern-0 .item-position-4 {
-  margin-top: 260px;
+  margin-top: 270px;
 }
+
 
 .row-pattern-1 .item-position-1 {
   margin-top: 240px;
@@ -168,6 +238,7 @@ body {
   margin-top: 110px;
 }
 
+
 .row-pattern-2 .item-position-1 {
   margin-top: 80px;
 }
@@ -183,6 +254,7 @@ body {
 .row-pattern-2 .item-position-4 {
   margin-top: 200px;
 }
+
 
 .row-pattern-3 .item-position-1 {
   margin-top: 310px;
@@ -200,6 +272,7 @@ body {
   margin-top: 20px;
 }
 
+
 .row-pattern-4 .item-position-1 {
   margin-top: 0;
 }
@@ -215,6 +288,7 @@ body {
 .row-pattern-4 .item-position-4 {
   margin-top: 330px;
 }
+
 
 .row-pattern-5 .item-position-1 {
   margin-top: 180px;
@@ -232,93 +306,314 @@ body {
   margin-top: 130px;
 }
 
+
+/* -----------------------------
+   2枚行専用の配置
+----------------------------- */
+
+.gallery-row-2.row-pattern-0 .item-position-1 {
+  margin-top: 20px;
+}
+
+.gallery-row-2.row-pattern-0 .item-position-2 {
+  margin-top: 250px;
+}
+
+.gallery-row-2.row-pattern-1 .item-position-1 {
+  margin-top: 280px;
+}
+
+.gallery-row-2.row-pattern-1 .item-position-2 {
+  margin-top: 0;
+}
+
+.gallery-row-2.row-pattern-2 .item-position-1 {
+  margin-top: 80px;
+}
+
+.gallery-row-2.row-pattern-2 .item-position-2 {
+  margin-top: 320px;
+}
+
+.gallery-row-2.row-pattern-3 .item-position-1 {
+  margin-top: 260px;
+}
+
+.gallery-row-2.row-pattern-3 .item-position-2 {
+  margin-top: 60px;
+}
+
+.gallery-row-2.row-pattern-4 .item-position-1 {
+  margin-top: 0;
+}
+
+.gallery-row-2.row-pattern-4 .item-position-2 {
+  margin-top: 210px;
+}
+
+.gallery-row-2.row-pattern-5 .item-position-1 {
+  margin-top: 220px;
+}
+
+.gallery-row-2.row-pattern-5 .item-position-2 {
+  margin-top: 30px;
+}
+
+
+/* -----------------------------
+   3枚行専用の配置
+----------------------------- */
+
+.gallery-row-3.row-pattern-0 .item-position-1 {
+  margin-top: 10px;
+}
+
+.gallery-row-3.row-pattern-0 .item-position-2 {
+  margin-top: 190px;
+}
+
+.gallery-row-3.row-pattern-0 .item-position-3 {
+  margin-top: 70px;
+}
+
+.gallery-row-3.row-pattern-1 .item-position-1 {
+  margin-top: 220px;
+}
+
+.gallery-row-3.row-pattern-1 .item-position-2 {
+  margin-top: 0;
+}
+
+.gallery-row-3.row-pattern-1 .item-position-3 {
+  margin-top: 280px;
+}
+
+.gallery-row-3.row-pattern-2 .item-position-1 {
+  margin-top: 70px;
+}
+
+.gallery-row-3.row-pattern-2 .item-position-2 {
+  margin-top: 270px;
+}
+
+.gallery-row-3.row-pattern-2 .item-position-3 {
+  margin-top: 0;
+}
+
+
+/* -----------------------------
+   Error
+----------------------------- */
+
 .gallery-error {
   width: 100%;
+
   padding: 100px 20px;
+
   text-align: center;
+
   color: #888;
 }
 
-/* タブレット：3枚 */
+
+/* -----------------------------
+   Tablet
+----------------------------- */
+
 @media (max-width: 900px) {
   .container {
-    padding:
-      70px
-      18px;
+    padding: 70px 14px;
   }
 
   .gallery-row {
-    flex-wrap: wrap;
-
-    justify-content: flex-start;
-
-    gap: 0;
-
-    margin-bottom: 200px;
-
     translate: 0 0;
+
+    margin-bottom: 210px;
   }
 
-  .item {
+  /*
+   * 4枚行は2列×2段
+   */
+  .gallery-row-4 {
+    flex-wrap: wrap;
+  }
+
+  .gallery-row-4 .item {
+    flex-basis: 50%;
+    width: 50%;
+  }
+
+  /*
+   * 3枚行は3枚を維持
+   */
+  .gallery-row-3 {
+    padding-left: 0;
+    padding-right: 0;
+
+    gap: 4px;
+  }
+
+  .gallery-row-3 .item {
     flex-basis: 33.333%;
     width: 33.333%;
   }
 
-  .item:nth-child(4) {
-    margin-left: 33.333%;
+  /*
+   * 2枚行は2枚を維持
+   */
+  .gallery-row-2 {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+
+  .gallery-row-2 .item {
+    flex-basis: 50%;
+    width: 50%;
   }
 }
 
-/* スマホ：2枚 */
+
+/* -----------------------------
+   Smartphone
+----------------------------- */
+
 @media (max-width: 600px) {
   .container {
-    padding:
-      55px
-      8px;
+    padding: 55px 8px;
   }
 
   .gallery-row {
-    margin-bottom: 150px;
+    margin-bottom: 170px;
   }
 
-  .item {
+  /*
+   * 4枚行はスマホで2列
+   */
+  .gallery-row-4 {
+    flex-wrap: wrap;
+
+    gap: 0;
+  }
+
+  .gallery-row-4 .item {
     flex-basis: 50%;
     width: 50%;
 
     margin-top:
-      calc(var(--offset, 0px) * 0.35);
+      calc(var(--offset, 0px) * 0.3);
   }
 
-  .item:nth-child(4) {
+  /*
+   * 3枚行は小さな3枚を維持
+   */
+  .gallery-row-3 {
+    display: flex;
+
+    gap: 3px;
+
+    padding: 0;
+
+    margin-bottom: 190px;
+  }
+
+  .gallery-row-3 .item {
+    flex-basis: 32%;
+    width: 32%;
+
+    margin-top:
+      calc(var(--offset, 0px) * 0.25);
+  }
+
+  /*
+   * 2枚行は1枚ずつ大きく表示
+   */
+  .gallery-row-2 {
+    display: block;
+
+    padding: 0;
+
+    margin-bottom: 80px;
+  }
+
+  .gallery-row-2 .item {
+    width: 86%;
+
+    margin-bottom: 110px;
+
+    margin-top:
+      calc(var(--offset, 0px) * 0.15);
+  }
+
+  .gallery-row-2 .item:nth-child(odd) {
     margin-left: 0;
+    margin-right: auto;
+  }
+
+  .gallery-row-2 .item:nth-child(even) {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  /*
+   * スマホでは重なり量を少し縮小
+   * 重なり自体は残す
+   */
+  .gallery-row-4 .item,
+  .gallery-row-3 .item {
+    transform:
+      translate(
+        calc(var(--overlap-x, 0%) * 0.75),
+        calc(var(--overlap-y, 0px) * 0.55)
+      );
+  }
+
+  .gallery-row-2 .item {
+    transform:
+      translate(
+        calc(var(--overlap-x, 0%) * 0.45),
+        calc(var(--overlap-y, 0px) * 0.55)
+      );
+  }
+
+  .reveal {
+    translate: 0 60px;
+  }
+}
+
+
+/* -----------------------------
+   Small smartphone
+----------------------------- */
+
+@media (max-width: 420px) {
+  .container {
+    padding: 45px 5px;
+  }
+
+  .gallery-row-2 .item {
+    width: 88%;
+
+    margin-bottom: 95px;
+  }
+
+  .gallery-row-3 {
+    margin-bottom: 160px;
+  }
+
+  .gallery-row-3 .item {
+    width: 32%;
+    flex-basis: 32%;
   }
 
   .item img {
-    width:
-      calc(
-        100% *
-        var(--width-scale, 1)
-      );
+    width: calc(100% * var(--width-scale, 1));
   }
 }
 
-/* 小さいスマホでも2枚を維持 */
-@media (max-width: 400px) {
-  .container {
-    padding:
-      45px
-      5px;
-  }
 
-  .gallery-row {
-    margin-bottom: 120px;
-  }
-
-  .item {
-    flex-basis: 50%;
-    width: 50%;
-  }
-}
+/* -----------------------------
+   Reduce motion
+----------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
   .reveal {
