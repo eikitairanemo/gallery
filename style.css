@@ -28,12 +28,12 @@ body{
    Layout
 ------------------------ */
 
-.container{
-
-    width:100%;
-    max-width:1600px;
-    margin:auto;
-    padding:24px;
+.container {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
 
 }
 
