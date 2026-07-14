@@ -1,9 +1,5 @@
 const gallery = document.getElementById("gallery");
 
-/**
- * 文字列から固定値を作る
- * 同じ画像は、再読み込みしても同じ重なり方になります
- */
 function createHash(text) {
   let hash = 0;
 
@@ -15,9 +11,6 @@ function createHash(text) {
   return Math.abs(hash);
 }
 
-/**
- * 画像の順番をランダムにする
- */
 function shuffleArray(array) {
   const result = [...array];
 
@@ -33,9 +26,6 @@ function shuffleArray(array) {
   return result;
 }
 
-/**
- * スクロール表示
- */
 const observer = new IntersectionObserver(
   entries => {
     entries.forEach(entry => {
@@ -46,14 +36,11 @@ const observer = new IntersectionObserver(
     });
   },
   {
-    threshold: 0.08,
-    rootMargin: "0px 0px -40px 0px"
+    threshold: 0.06,
+    rootMargin: "0px 0px -30px 0px"
   }
 );
 
-/**
- * images.jsonを読み込む
- */
 fetch(`./images.json?v=${Date.now()}`)
   .then(response => {
     if (!response.ok) {
@@ -73,34 +60,29 @@ fetch(`./images.json?v=${Date.now()}`)
     let rowIndex = 0;
 
     while (currentIndex < shuffledImages.length) {
-      const remaining = shuffledImages.length - currentIndex;
-
-      /*
-       * PCでは2枚または3枚の行をランダム生成
-       * 約60％の確率で3枚になります
-       */
-      let itemCount = Math.random() < 0.6 ? 3 : 2;
-
-      if (remaining < itemCount) {
-        itemCount = remaining;
-      }
-
       const row = document.createElement("div");
 
       row.className = [
         "gallery-row",
-        `gallery-row-${itemCount}`,
-        `row-pattern-${rowIndex % 5}`
+        `row-pattern-${rowIndex % 6}`
       ].join(" ");
 
       /*
-       * 行全体の左右移動
+       * 行全体を左右へ少し移動
        */
-      const rowShiftPatterns = [-4, 2, 4, -2, 1];
+      const rowShiftPatterns = [-3, 2, 0, 4, -2, 1];
 
       row.style.setProperty(
         "--row-shift",
         `${rowShiftPatterns[rowIndex % rowShiftPatterns.length]}%`
+      );
+
+      /*
+       * PCでは基本4枚ずつ
+       */
+      const itemCount = Math.min(
+        4,
+        shuffledImages.length - currentIndex
       );
 
       for (let position = 0; position < itemCount; position++) {
@@ -116,71 +98,58 @@ fetch(`./images.json?v=${Date.now()}`)
         ].join(" ");
 
         /*
-         * 上下位置を画像ごとに変更
+         * 上下位置をばらけさせる
          */
-        const offsetPatterns = [0, 70, 130, 190, 250];
+        const offsetPatterns = [
+          0,
+          80,
+          150,
+          230,
+          310,
+          120,
+          270
+        ];
 
         const offset =
           offsetPatterns[
-            (hash + position + rowIndex) % offsetPatterns.length
+            (hash + position + rowIndex) %
+              offsetPatterns.length
           ];
 
         item.style.setProperty("--offset", `${offset}px`);
 
         /*
-         * スクロールアニメーションの時間差
+         * 横幅を画像ごとに変える
          */
-        const delay = ((currentIndex + position) % 6) * 90;
-
-        item.style.setProperty("--delay", `${delay}ms`);
-
-        /*
-         * 画像の大きさを少し変える
-         */
-        const widthScalePatterns = [0.88, 0.94, 1, 1.04];
+        const widthPatterns = [
+          0.76,
+          0.82,
+          0.88,
+          0.94,
+          1,
+          0.86
+        ];
 
         const widthScale =
-          widthScalePatterns[
+          widthPatterns[
             (hash + rowIndex + position) %
-              widthScalePatterns.length
+              widthPatterns.length
           ];
 
         item.style.setProperty("--width-scale", widthScale);
 
         /*
-         * 画像の重なり
+         * 左右・上下の重なり
+         * 空のパターンを少なくして重なりを増やす
          */
         const overlapPatterns = [
-          {
-            className: "",
-            x: 0,
-            y: 0,
-            z: 1
-          },
-          {
-            className: "overlap-left",
-            x: -14,
-            y: 0,
-            z: 4
-          },
-          {
-            className: "overlap-right",
-            x: 14,
-            y: 0,
-            z: 3
-          },
-          {
-            className: "overlap-up",
-            x: 0,
-            y: -110,
-            z: 5
-          },
-          {
-            className: "overlap-down",
-            x: 0,
-            y: 70,
-            z: 2
-          }
+          { x: -22, y: 0, z: 5 },
+          { x: 20, y: -70, z: 4 },
+          { x: -16, y: 80, z: 3 },
+          { x: 18, y: -130, z: 6 },
+          { x: -25, y: -40, z: 7 },
+          { x: 12, y: 100, z: 2 },
+          { x: 0, y: -90, z: 5 }
         ];
 
         const overlap =
@@ -189,13 +158,28 @@ fetch(`./images.json?v=${Date.now()}`)
               overlapPatterns.length
           ];
 
-        if (overlap.className) {
-          item.classList.add(overlap.className);
-        }
+        item.style.setProperty(
+          "--overlap-x",
+          `${overlap.x}%`
+        );
 
-        item.style.setProperty("--overlap-x", `${overlap.x}%`);
-        item.style.setProperty("--overlap-y", `${overlap.y}px`);
-        item.style.setProperty("--item-z", overlap.z);
+        item.style.setProperty(
+          "--overlap-y",
+          `${overlap.y}px`
+        );
+
+        item.style.setProperty(
+          "--item-z",
+          overlap.z
+        );
+
+        /*
+         * フェード表示の時間差
+         */
+        item.style.setProperty(
+          "--delay",
+          `${((currentIndex + position) % 5) * 80}ms`
+        );
 
         const img = document.createElement("img");
 
